@@ -1,21 +1,27 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven 3.3.9'
-        jdk 'jdk8'
-    }
     stages {
-        stage ('Initialize') {
-            steps {
-                 echo "PATH = ${PATH}"
-                 echo "M2_HOME = ${M2_HOME}"
+        stage ('Compile Stage') {
 
+            steps {
+                withMaven(maven : 'apache-maven-3.3.9') {
+                    bat 'mvn clean compile'
+                }
             }
         }
-        stage ('Build') {
+        stage ('Testing Stage') {
+
             steps {
-             sh 'mvn --version'
-                echo 'This is a minimal pipeline.'
+                withMaven(maven : 'apache-maven-3.3.9') {
+                    bat 'mvn test'
+                }
+            }
+        }
+        stage ('Install Stage') {
+            steps {
+                withMaven(maven : 'apache-maven-3.3.9') {
+                    bat 'mvn install'
+                }
             }
         }
     }
